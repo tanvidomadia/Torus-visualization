@@ -16,15 +16,15 @@ from PIL import Image, ImageDraw
 
 #reading the files in DataFrame(df)
 #df1 = pandas.read_csv("by_activity.csv")
-df2 = pandas.read_csv("raw_analytics1.csv")
+df2 = pandas.read_csv("raw_analytics.csv")
 df2 = df2.join(df2['Student Response'].apply(json.loads).apply(pandas.Series))
 df3 = df2.join(df2['Activity Content'].apply(json.loads).apply(pandas.Series))
 df_mcq = df3[df3['Activity Type'] == "Multiple Choice"]
 df_single_response = df3[df3['Activity Type'] == "Single Response"]
-df_check_all_that_apply = df3[df3['Activity Type'] == "Check All That Apply"]
+df_cata = df3[df3['Activity Type'] == "Check All That Apply"]
 df_mcq = df_mcq.sort_values(by=['Activity ID','Student Response'])
 df_single_response = df_single_response.sort_values(by = ['Activity ID'])
-df_check_all_that_apply = df_check_all_that_apply.sort_values(by = ['Activity ID'])
+df_cata = df_cata.sort_values(by = ['Activity ID'])
 dict_of_mcqs = {k: v for k, v in df_mcq.groupby('Activity ID')}
 pdf = FPDF()
 pdf = FPDF(orientation="landscape")
@@ -54,22 +54,28 @@ for i in dict_of_mcqs:
     list_of_choice_d_id = []
     for y in temp_mcq.index:
         problem = temp_mcq.loc[y,"authoring"]["previewText"]
+        
         list_of_questions.insert(y, problem)
         choice_a_id = temp_mcq.loc[y, "choices"][0]['id']
         choice_a = temp_mcq.loc[y, "choices"][0]['content'][0]['children'][0]['text']
         
         choice_b_id = temp_mcq.loc[y, "choices"][1]['id']
         choice_b = temp_mcq.loc[y, "choices"][1]['content'][0]['children'][0]['text']
-        choice_c_id = temp_mcq.loc[y, "choices"][2]['id']
-        choice_c = temp_mcq.loc[y, "choices"][2]['content'][0]['children'][0]['text']
-        if(len(temp_mcq.loc[y, "choices"]) > 3):
-            choice_d_id = temp_mcq.loc[y, "choices"][3]['id']
-            choice_d = temp_mcq.loc[y, "choices"][3]['content'][0]['children'][0]['text']
+        if(len(temp_mcq.loc[y, "choices"]) > 2):
+            choice_c_id = temp_mcq.loc[y, "choices"][2]['id']
+            choice_c = temp_mcq.loc[y, "choices"][2]['content'][0]['children'][0]['text']
+            if(len(temp_mcq.loc[y, "choices"]) > 3):
+                choice_d_id = temp_mcq.loc[y, "choices"][3]['id']
+                choice_d = temp_mcq.loc[y, "choices"][3]['content'][0]['children'][0]['text']
+            else:
+                choice_d = "not present"
+                choice_d_id = " "
         else:
-            choice_d = "not present"
-            choice_d_id = " "
-        
-
+            choice_c = 'not present'
+            choice_c_id = ''
+            choice_d = 'not present'
+            choice_d_id = ''
+            
         list_of_choice_a_id.insert(y, choice_a_id)
         list_of_choice_b_id.insert(y, choice_b_id)
         list_of_choice_c_id.insert(y, choice_c_id)
@@ -175,8 +181,6 @@ for i in dict_of_mcqs:
     
     #img_buf.close()
 
-
-
 #Step 2: single responses table visualization
 dfs_singles = dict(tuple(df_single_response.groupby('Activity ID')))
 print("enter singles section")
@@ -193,91 +197,19 @@ for i, df in dfs_singles.items():
         response = df.loc[x,'input']
         single_responses.insert(x,response)
         x1=x1+1
-        print("in singles")
+        print("response")
     pdf.set_font('Arial', size=10)
     pdf.multi_cell(200,10,question + '\n', align = 'L')
     for i in range(len(single_responses)):
         pdf.multi_cell(200,10,single_responses[i], align = 'L', border = 1)
-        print("printing single responses")
     #the_table = ax.table(cellText=df_table.values,colLabels=df_table.columns,loc='center',rowLoc='right', colLoc='right', cellLoc='left', edges = 'open')
     #the_table.set_fontsize(25)
     pdf.cell(200,10,'\n')
 
 #Step 3: Check All That Apply Visualization
-dict_of_cata = {k: v for k, v in df_check_all_that_apply.groupby('Activity ID')}
-for i in dict_of_cata:
-    dict_of_cata[i].to_csv("All_cata" + str(i) + ".csv", index = False)
-    temp_cata = dict_of_cata[i]
-    list_of_questions1 = []
-    list_of_choices_a1 = []
-    list_of_choices_b1 = []
-    list_of_choices_c1 = []
-    list_of_choices_d1 = []
-    list_of_choice_a_id1 = []
-    list_of_choice_b_id1 = []
-    list_of_choice_c_id1 = []
-    list_of_choice_d_id1 = []
-    for y in temp_cata.index:
-        problem = temp_cata.loc[y,"authoring"]["previewText"]
-        list_of_questions1.insert(y, problem)
-        choice_a_id1 = temp_cata.loc[y, "choices"][0]['id']
-        choice_a1 = temp_cata.loc[y, "choices"][0]['content'][0]['children'][0]['text']
-        choice_b_id1 = temp_cata.loc[y, "choices"][1]['id']
-        choice_b1 = temp_cata.loc[y, "choices"][1]['content'][0]['children'][0]['text']
-        choice_c_id1 = temp_cata.loc[y, "choices"][2]['id']
-        choice_c1 = temp_cata.loc[y, "choices"][2]['content'][0]['children'][0]['text']
-        if(len(temp_cata.loc[y, "choices"]) > 3):
-            choice_d_id1 = temp_cata.loc[y, "choices"][3]['id']
-            choice_d1 = temp_cata.loc[y, "choices"][3]['content'][0]['children'][0]['text']
-        else:
-            choice_d1 = "not present"
-            choice_d_id1 = " "
-            
-        list_of_choice_a_id1.insert(y, choice_a_id1)
-        list_of_choice_b_id1.insert(y, choice_b_id1)
-        list_of_choice_c_id1.insert(y, choice_c_id1)
-        list_of_choice_d_id1.insert(y, choice_d_id1)
-        list_of_choices_a1.insert(y, choice_a1)
-        list_of_choices_b1.insert(y, choice_b1)
-        list_of_choices_c1.insert(y, choice_c1)
-        list_of_choices_d1.insert(y, choice_d1)
- 
-    temp_cata['choice_a_id'] = list_of_choice_a_id
-    temp_cata['choice_b_id'] = list_of_choice_b_id
-    temp_cata['choice_c_id'] = list_of_choice_c_id
-    temp_cata['choice_d_id'] = list_of_choice_d_id
-    temp_cata['choice_a'] = list_of_choices_a
-    temp_cata['choice_b'] = list_of_choices_b
-    temp_cata['choice_c'] = list_of_choices_c
-    temp_cata['choice_d'] = list_of_choices_d
-    temp_cata["question"] = list_of_questions
-    correct_choice = ""
-    
-
 
 
 #converting output dataframes to csvs
 #df_mcq.to_csv("All_mcqs3.csv", index = False)
 pdf.output('single_responses5.pdf')
-df_temp_cata('cata.csv', index = False)
 df_single_response.to_csv("All_single_responses3.csv", index = False)
-
-
-        
-            
-            
-            
-            
-            
-            
-            
-    
-
-
-
-
-
-           
-            
-                    
-        

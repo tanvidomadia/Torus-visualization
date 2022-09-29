@@ -141,17 +141,17 @@ for i in dict_of_mcqs:
     #fig, axis = plot.subplots(2)
     plot.xlim(200,1200)
     plot.ylim(0,300)
-    bar_data = {"Options": ['Option A','Option B','Option C','Option D'], "Number_of_Students": [temp_mcq['count_a'].values[0], temp_mcq['count_b'].values[0], temp_mcq['count_c'].values[0], temp_mcq['count_d'].values[0]]}
+    bar_data = {"Options": ['Option A','Option B','Option C','Option D'], "Number_of_Attempts": [temp_mcq['count_a'].values[0], temp_mcq['count_b'].values[0], temp_mcq['count_c'].values[0], temp_mcq['count_d'].values[0]]}
     dataFrame  = pandas.DataFrame(data = bar_data)
     plot.figure(figsize=(11,9))
     if(temp_mcq['correct_choice'].values[0] == "Choice A"):
-        dataFrame.plot.barh(x='Options', y='Number_of_Students', title="Student attempt for Q.", width = 0.5, color=['#5cb85c','#d9534f','#d9534f','#d9534f'])
+        dataFrame.plot.barh(x='Options', y='Number_of_Attempts', title="Student attempt for Q.", width = 0.5, color=['#5cb85c','#d9534f','#d9534f','#d9534f'])
     if(temp_mcq['correct_choice'].values[0] == "Choice B"):
-        dataFrame.plot.barh(x='Options', y='Number_of_Students', title="Student attempt for Q.", width = 0.5, color=['#d9534f','#5cb85c','#d9534f','#d9534f'])
+        dataFrame.plot.barh(x='Options', y='Number_of_Attempts', title="Student attempt for Q.", width = 0.5, color=['#d9534f','#5cb85c','#d9534f','#d9534f'])
     if(temp_mcq['correct_choice'].values[0] == "Choice C"):
-        dataFrame.plot.barh(x='Options', y='Number_of_Students', title="Student attempt for Q.", width = 0.5, color=['#d9534f','#d9534f','#5cb85c','#d9534f'])
+        dataFrame.plot.barh(x='Options', y='Number_of_Attempts', title="Student attempt for Q.", width = 0.5, color=['#d9534f','#d9534f','#5cb85c','#d9534f'])
     if(temp_mcq['correct_choice'].values[0] == "Choice D"):
-        dataFrame.plot.barh(x='Options', y='Number_of_Students', title="Student attempt for Q.", width = 0.5, color=['#d9534f','#d9534f','#d9534f','#5cb85c'])
+        dataFrame.plot.barh(x='Options', y='Number_of_Attempts', title="Student attempt for Q.", width = 0.5, color=['#d9534f','#d9534f','#d9534f','#5cb85c'])
     
     #plot.rcParams.update({'axes.facecolor':'lightgreen'})
     plot.title(temp_mcq['Activity Title'].values[0])

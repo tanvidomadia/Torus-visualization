@@ -15,6 +15,7 @@ e. Install fpdf by using the command: pip install fpdf
 3. Unzip the file, extract the raw_analytics file and save as CSV in the same directory as the script (Replace the exisiting raw_analytics.csv with this new file). 
 
 4. Run the python script: python torus_visualize.py 
+or py torus_visualize.py
 
 5. The output pdf (torus_visualize_output.pdf) will be in the above directory along with the other image files and data files. 
 
